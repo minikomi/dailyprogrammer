@@ -9,6 +9,7 @@
          (idx 0)]
         [(ch word)]
       (if (char-alphabetic? ch)
+          ; char is alphabetic
           (values
            (cons (char-downcase ch) letters)
            punc-pos
@@ -16,6 +17,7 @@
                (hash-set cap-pos idx ch)
                cap-pos)
            (add1 idx))
+          ; char is punctuation
           (values
            letters 
            (hash-set punc-pos idx ch)
@@ -23,8 +25,7 @@
            (add1 idx))
           )))
   
-  (define sorted-letters
-    (sort letters char<=?))
+  (define sorted-letters (sort letters char<=?))
 
   (define (build-word remaining-letters idx built)
     (if (= word-len idx) built
@@ -47,3 +48,12 @@
 (define (mangle str)
   (define words (string-split str))
   (string-join (map word-mangle words) " "))
+
+(module+ test
+  (require rackunit)
+  (check-equal?
+   "Hist aceeghlln denos't eems os adhr."
+   (mangle "This challenge doesn't seem so hard."))
+  (check-equal?
+   "Eehrt aer emor ghinst beeentw aeehnv adn aehrt, Ahioort, ahnt aer ademrt fo in oruy hhilooppsy."
+   (mangle "There are more things between heaven and earth, Horatio, than are dreamt of in your philosophy.")))
