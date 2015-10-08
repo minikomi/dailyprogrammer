@@ -9,7 +9,6 @@
        (string-split input)))
 
 (define (frame->score frame)
-  (displayln (~a "frame: " frame))
   (define (loop remain tally)
     (if (empty? remain) tally
         (cond
@@ -40,25 +39,42 @@
   (check-eq? 10
              (frame->score (list #\4 #\/)))
   (check-eq? 15
-             (frame->score (list #\- #\/ #\4)))
-  )
+             (frame->score (list #\- #\/ #\5))))
 
 (define (add-bonus-frames frames tally frame-type)
   (case frame-type
-    ['strike (+ tally 10 (frame->score (take (flatten (rest frames)) 2)))]
-    ['spare (+ tally 10 (frame->score (take (flatten (rest frames)) 1)))]
-    ))
+    ['strike
+     (+ tally 10
+        (frame->score (take (flatten (rest frames)) 2)))]
+    ['spare
+     (+ tally 10
+        (frame->score (take (flatten (rest frames)) 1)))]))
 
 (define (tally-game frames (tally 0))
-  (displayln tally)
   (if (= (length frames) 1)
       (+ tally
          (frame->score (first frames)))
-      (tally-game (rest frames)
-                  (cond
-                    [(member #\X (first frames))
-                     (add-bonus-frames frames tally 'strike)]
-                    [(member #\/ (first frames))
-                     (add-bonus-frames frames tally 'spare)]
-                    [else
-                     (+ tally (frame->score (first frames)))])))) 
+      (tally-game
+       (rest frames)
+       (cond
+         [(member #\X (first frames))
+          (add-bonus-frames frames tally 'strike)]
+         [(member #\/ (first frames))
+          (add-bonus-frames frames tally 'spare)]
+         [else
+          (+ tally (frame->score (first frames)))]
+         )))) 
+
+(module+ test
+  (check-eq?
+   300
+   (tally-game
+    (parse-input test-input-1)))
+  (check-eq?
+   137
+   (tally-game
+    (parse-input test-input-2)))
+  (check-eq?
+   140
+   (tally-game
+    (parse-input test-input-3))))
