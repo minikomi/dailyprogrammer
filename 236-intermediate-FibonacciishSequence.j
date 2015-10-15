@@ -1,4 +1,4 @@
-NB. A monad which generates fibonacci numbers until it's greater than or equal to y:
+NB. A monad which generates fibonacci numbers until greater than or equal to y:
 
     fibUpTo =. monad : 0
 ((,[:+/_2&{.)^:(x >: {:)^:_) (0 1)
