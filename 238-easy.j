@@ -3,7 +3,7 @@ NB. A random lowercase string of letters in which consonants (bcdfghjklmnpqrstvw
     vowels =: 'aeiou'
     consts =: 'bcdfghjklmnpqrstvwxyz'
     sets =: vowels ; consts ; (toupper vowels) ; (toupper consts)
-    ch238 =: [: , ;@:(] {~ ?@#)&>@(sets {~ 'vcVC'&i.)
+    ch238 =:  (] {~ (?@#))&>@:(sets {~ 'vcVC'&i.)
     ch238  'vvVcVc'
 
 NB. ieUqUy
