@@ -20,7 +20,7 @@
 
 (define (solve-249-linear initial-vals)
   (define (solve-loop max-profit low high vals)
-    (if (>= 2 (length vals)) (list low high)
+    (if (>= 2 (length vals)) (list low (apply max (cons high vals)))
         (if (> low (first vals))
             (solve-loop max-profit (first vals) high (drop vals 2))
             (if (< max-profit (- (first vals) low))
