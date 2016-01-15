@@ -38,41 +38,32 @@
         (select-loop (rest c) (- w 1 (candidate-fitness (first c))))))
   (select-loop culled random-weight))
     
-(define (weighted-breed target culled)
+(define (weighted-breed target culled mut-rate)
   (define p1 (weighted-random culled))
   (define p2 (weighted-random (remove p1 culled)))
   (define new-v
     (list->string
      (build-list
       (string-length target)
-      (λ (n) (cond
-               [(char=?
-                 (string-ref (candidate-val p1) n)
-                 (string-ref target n))
-                (string-ref target n)]
-               [(char=?
-                 (string-ref (candidate-val p2) n)
-                 (string-ref target n))
-                (string-ref target n)]
-               [else
+      (λ (n)
+           (if (< mut-rate (random))
+               (random-char)
+               (string-ref
                 (if (< 0.5 (random))
-                    (random-char)
-                    (string-ref
-                     (if (< 0.5 (random))
-                         (candidate-val p1)
-                         (candidate-val p2))
-                     n))])))))
+                    (candidate-val p1)
+                    (candidate-val p2))
+                n))))))
   (make-candidate (fitness target new-v) new-v))
 
-(define (next-generation target cull-rate pop)
+(define (next-generation target cull-rate mut-rate pop)
   (define pop-size (length pop))
   (define culled (sort-and-cull target pop cull-rate))
   (sort-by-fitness target
    (append culled
           (build-list (inexact->exact (* pop-size cull-rate))
-                      (λ (_) (weighted-breed target culled))))))
+                      (λ (_) (weighted-breed target culled mut-rate))))))
 
-(define (249-intermediate target pop-size cull-rate max-iter)
+(define (249-intermediate target pop-size cull-rate mut-rate max-iter)
   (define initial-pop (generate-population target pop-size))
   (define (iter pop n)
     (cond [(= (string-length target) (candidate-fitness (first pop)))
@@ -84,7 +75,7 @@
                                   n
                                   (candidate-fitness (first pop))
                                   (candidate-val (first pop))))           
-             (iter (next-generation target cull-rate pop) (add1 n)))]))
+             (iter (next-generation target cull-rate mut-rate pop) (add1 n)))]))
   (iter initial-pop 0))
            
 
